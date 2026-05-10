@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Previous Session Photos</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #0f0f0f;
+      color: #f0f0f0;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    header h1 {
+      font-size: 2rem;
+      font-weight: 300;
+      letter-spacing: 0.15em;
+      color: #e8d5b7;
+      text-transform: uppercase;
+    }
+
+    header p {
+      margin-top: 10px;
+      font-size: 0.85rem;
+      color: #888;
+      letter-spacing: 0.08em;
+    }
+
+    .session-label {
+      display: inline-block;
+      margin-top: 16px;
+      padding: 4px 14px;
+      border: 1px solid #e8d5b7;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      color: #e8d5b7;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 600px) {
+      .gallery {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .photo-card {
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #1a1a1a;
+      aspect-ratio: 4/3;
+      cursor: pointer;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .photo-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .photo-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.4s ease;
+    }
+
+    .photo-card:hover img {
+      transform: scale(1.04);
+    }
+
+    .photo-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(transparent, rgba(0,0,0,0.75));
+      padding: 28px 16px 16px;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    .photo-card:hover .photo-overlay {
+      opacity: 1;
+    }
+
+    .photo-meta {
+      font-size: 0.78rem;
+      color: #e8d5b7;
+      letter-spacing: 0.05em;
+    }
+
+    .photo-num {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(0,0,0,0.55);
+      border-radius: 6px;
+      padding: 3px 9px;
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      color: #ccc;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Session Photos</h1>
+    <p>Patrick III &mdash; Love Perfume</p>
+    <span class="session-label">Last Session &bull; May 9, 2026</span>
+  </header>
+
+  <div class="gallery">
+    <div class="photo-card">
+      <img
+        src="https://images.unsplash.com/photo-1590736969955-71cc94901144?w=800&auto=format&fit=crop"
+        alt="Session photo 1"
+        loading="lazy"
+      />
+      <span class="photo-num">#01</span>
+      <div class="photo-overlay">
+        <div class="photo-meta">10:14 AM &bull; Studio A</div>
+      </div>
+    </div>
+
+    <div class="photo-card">
+      <img
+        src="https://images.unsplash.com/photo-1541643600914-78b084683702?w=800&auto=format&fit=crop"
+        alt="Session photo 2"
+        loading="lazy"
+      />
+      <span class="photo-num">#02</span>
+      <div class="photo-overlay">
+        <div class="photo-meta">10:42 AM &bull; Studio A</div>
+      </div>
+    </div>
+
+    <div class="photo-card">
+      <img
+        src="https://images.unsplash.com/photo-1615634260167-c8cdede054de?w=800&auto=format&fit=crop"
+        alt="Session photo 3"
+        loading="lazy"
+      />
+      <span class="photo-num">#03</span>
+      <div class="photo-overlay">
+        <div class="photo-meta">11:05 AM &bull; Studio B</div>
+      </div>
+    </div>
+
+    <div class="photo-card">
+      <img
+        src="https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?w=800&auto=format&fit=crop"
+        alt="Session photo 4"
+        loading="lazy"
+      />
+      <span class="photo-num">#04</span>
+      <div class="photo-overlay">
+        <div class="photo-meta">11:33 AM &bull; Studio B</div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
