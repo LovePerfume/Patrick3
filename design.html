@@ -1,0 +1,1838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SOLSTICE — Coffee Lounge & Bar Design</title>
+  <style>
+    :root {
+      --bg: #f5f0e8;
+      --surface: #fff;
+      --text: #1a1610;
+      --muted: #7a6e5e;
+      --accent: #c49a57;
+      --accent2: #8b5e3c;
+      --border: #e0d4c0;
+      --wood: #b5865a;
+      --night-toggle: #1a1a2e;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Georgia', 'Times New Roman', serif;
+      background: var(--bg);
+      color: var(--text);
+      transition: background 0.6s ease, color 0.6s ease;
+    }
+
+    body.night {
+      --bg: #0d0d12;
+      --surface: #14141e;
+      --text: #e8e0d0;
+      --muted: #8a8a9e;
+      --accent: #00e5a0;
+      --accent2: #ff3366;
+      --border: #2a2a3e;
+    }
+
+    /* ── TOGGLE ───────────────────────────────────────────── */
+    .toggle-bar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      padding: 12px 24px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      transition: background 0.6s, border 0.6s;
+    }
+    .toggle-label {
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .toggle-switch {
+      position: relative;
+      width: 64px; height: 30px;
+      cursor: pointer;
+    }
+    .toggle-switch input { display: none; }
+    .toggle-track {
+      width: 64px; height: 30px;
+      border-radius: 15px;
+      background: #d4c9b0;
+      transition: background 0.4s;
+      position: relative;
+    }
+    .toggle-switch input:checked + .toggle-track { background: #1a2a1a; }
+    .toggle-knob {
+      position: absolute;
+      top: 3px; left: 3px;
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      background: var(--accent);
+      transition: transform 0.4s, background 0.4s;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    }
+    .toggle-switch input:checked ~ .toggle-knob {
+      transform: translateX(34px);
+      background: #00e5a0;
+    }
+    .mode-text {
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      font-style: italic;
+      min-width: 100px;
+    }
+
+    /* ── HERO ─────────────────────────────────────────────── */
+    .hero {
+      margin-top: 55px;
+      height: calc(100vh - 55px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      background: #1a1612;
+    }
+
+    .hero-bg-day {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 30%, rgba(196,154,87,0.18) 0%, transparent 70%),
+        linear-gradient(160deg, #2a1f12 0%, #1a1612 40%, #0f0c08 100%);
+      transition: opacity 0.8s;
+    }
+    .hero-bg-night {
+      position: absolute; inset: 0;
+      opacity: 0;
+      background:
+        radial-gradient(ellipse 60% 40% at 30% 50%, rgba(0,229,160,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 70% 60%, rgba(255,51,102,0.1) 0%, transparent 60%),
+        linear-gradient(160deg, #0a0f0a 0%, #0d0d12 100%);
+      transition: opacity 0.8s;
+    }
+    body.night .hero-bg-day { opacity: 0; }
+    body.night .hero-bg-night { opacity: 1; }
+
+    .hero-content { position: relative; z-index: 1; padding: 0 24px; }
+
+    .hero-eyebrow {
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 20px;
+      transition: color 0.6s;
+    }
+
+    .hero-title {
+      font-size: clamp(3rem, 8vw, 6.5rem);
+      font-weight: 300;
+      letter-spacing: 0.12em;
+      color: #f0e8d8;
+      line-height: 1;
+      margin-bottom: 16px;
+      transition: color 0.6s;
+    }
+    body.night .hero-title { color: #e0f8f0; }
+
+    .hero-subtitle {
+      font-size: clamp(0.85rem, 2vw, 1rem);
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: #a89070;
+      margin-bottom: 32px;
+      transition: color 0.6s;
+    }
+    body.night .hero-subtitle { color: #5a7a6a; }
+
+    .hero-tagline {
+      font-size: 1rem;
+      color: #c8b898;
+      font-style: italic;
+      max-width: 420px;
+      line-height: 1.7;
+      margin: 0 auto 40px;
+      transition: color 0.6s;
+    }
+    body.night .hero-tagline { color: #7a8a80; }
+
+    .hero-dims {
+      display: flex;
+      gap: 32px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .dim-pill {
+      padding: 8px 20px;
+      border: 1px solid rgba(196,154,87,0.4);
+      border-radius: 24px;
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      transition: border-color 0.6s, color 0.6s;
+    }
+    body.night .dim-pill { border-color: rgba(0,229,160,0.3); }
+
+    /* ── SECTION BASE ─────────────────────────────────────── */
+    .section {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 80px 32px;
+    }
+    .section-label {
+      font-size: 0.68rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+      transition: color 0.6s;
+    }
+    .section-title {
+      font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+      font-weight: 300;
+      color: var(--text);
+      margin-bottom: 16px;
+      line-height: 1.25;
+      transition: color 0.6s;
+    }
+    .section-desc {
+      font-size: 0.95rem;
+      line-height: 1.85;
+      color: var(--muted);
+      max-width: 640px;
+      transition: color 0.6s;
+    }
+    .divider {
+      width: 48px; height: 2px;
+      background: var(--accent);
+      margin: 24px 0;
+      transition: background 0.6s;
+    }
+
+    /* ── FLOOR PLAN ───────────────────────────────────────── */
+    .floorplan-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 40px;
+      margin-top: 48px;
+      transition: background 0.6s, border 0.6s;
+    }
+    .floorplan-wrap h3 {
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+
+    .fp-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 24px;
+    }
+    .fp-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+    .fp-legend-swatch {
+      width: 14px; height: 14px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+
+    /* ── ZONES GRID ───────────────────────────────────────── */
+    .zones-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      margin-top: 48px;
+    }
+    .zone-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      transition: background 0.6s, border 0.6s, transform 0.25s;
+    }
+    .zone-card:hover { transform: translateY(-4px); }
+    .zone-number {
+      font-size: 2rem;
+      font-weight: 200;
+      color: var(--border);
+      line-height: 1;
+      margin-bottom: 12px;
+      transition: color 0.6s;
+    }
+    .zone-name {
+      font-size: 1rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text);
+      margin-bottom: 8px;
+      transition: color 0.6s;
+    }
+    .zone-size {
+      font-size: 0.72rem;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      margin-bottom: 12px;
+      transition: color 0.6s;
+    }
+    .zone-desc {
+      font-size: 0.85rem;
+      line-height: 1.7;
+      color: var(--muted);
+      transition: color 0.6s;
+    }
+    .zone-badge {
+      display: inline-block;
+      margin-top: 14px;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+    }
+    .badge-day { background: rgba(196,154,87,0.12); color: #c49a57; }
+    .badge-night { background: rgba(0,229,160,0.1); color: #00c488; }
+
+    /* ── PALETTE ──────────────────────────────────────────── */
+    .palette-section {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      transition: background 0.6s, border 0.6s;
+    }
+    .palette-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0;
+      margin-top: 40px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .swatch {
+      padding: 0 0 20px 0;
+    }
+    .swatch-color {
+      height: 100px;
+      transition: transform 0.25s;
+    }
+    .swatch:hover .swatch-color { transform: scaleY(1.08); transform-origin: bottom; }
+    .swatch-info { padding: 14px 16px 0; }
+    .swatch-name {
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text);
+      transition: color 0.6s;
+    }
+    .swatch-hex {
+      font-size: 0.65rem;
+      color: var(--muted);
+      margin-top: 4px;
+      font-family: monospace;
+      letter-spacing: 0.05em;
+      transition: color 0.6s;
+    }
+
+    /* ── MATERIALS ────────────────────────────────────────── */
+    .materials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 24px;
+      margin-top: 48px;
+    }
+    .material-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--surface);
+      transition: background 0.6s, border 0.6s;
+    }
+    .material-thumb {
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .material-body { padding: 18px; }
+    .material-name {
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text);
+      margin-bottom: 6px;
+      transition: color 0.6s;
+    }
+    .material-spec {
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.6;
+      transition: color 0.6s;
+    }
+
+    /* ── FURNITURE ────────────────────────────────────────── */
+    .furniture-list {
+      margin-top: 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: background 0.6s, border 0.6s;
+    }
+    .furniture-row {
+      display: grid;
+      grid-template-columns: 60px 1fr 120px 100px 80px;
+      align-items: center;
+      padding: 16px 24px;
+      background: var(--surface);
+      gap: 16px;
+      transition: background 0.6s;
+    }
+    .furniture-row.header {
+      background: var(--bg);
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 12px 24px;
+      transition: background 0.6s, color 0.6s;
+    }
+    .furniture-row:not(.header):hover { background: rgba(196,154,87,0.04); }
+    .furn-id {
+      font-size: 0.72rem;
+      font-family: monospace;
+      color: var(--accent);
+      transition: color 0.6s;
+    }
+    .furn-name { font-size: 0.88rem; color: var(--text); transition: color 0.6s; }
+    .furn-zone { font-size: 0.75rem; color: var(--muted); transition: color 0.6s; }
+    .furn-mat { font-size: 0.75rem; color: var(--muted); transition: color 0.6s; }
+    .furn-qty {
+      font-size: 0.78rem;
+      color: var(--accent);
+      font-weight: bold;
+      text-align: right;
+      transition: color 0.6s;
+    }
+
+    @media (max-width: 640px) {
+      .furniture-row {
+        grid-template-columns: 50px 1fr 80px;
+      }
+      .furn-mat, .furn-zone { display: none; }
+    }
+
+    /* ── LIGHTING ─────────────────────────────────────────── */
+    .lighting-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 48px;
+    }
+    @media (max-width: 700px) { .lighting-split { grid-template-columns: 1fr; } }
+
+    .lighting-card {
+      border-radius: 16px;
+      padding: 36px 28px;
+      position: relative;
+      overflow: hidden;
+    }
+    .lighting-day {
+      background: linear-gradient(135deg, #fdf4e3 0%, #f0e0c0 100%);
+      border: 1px solid #e8d4a8;
+    }
+    .lighting-night {
+      background: linear-gradient(135deg, #0a0f14 0%, #0d1a12 60%, #120a14 100%);
+      border: 1px solid #1a2a1a;
+    }
+    .lighting-card h3 {
+      font-size: 1rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+    .lighting-day h3 { color: #8b6530; }
+    .lighting-night h3 { color: #00e5a0; }
+    .lighting-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .light-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      margin-top: 5px;
+      flex-shrink: 0;
+    }
+    .lighting-day .light-dot { background: #c49a57; box-shadow: 0 0 8px rgba(196,154,87,0.5); }
+    .lighting-night .light-dot { background: #00e5a0; box-shadow: 0 0 8px rgba(0,229,160,0.6); }
+    .lighting-item-text {
+      font-size: 0.82rem;
+      line-height: 1.65;
+    }
+    .lighting-day .lighting-item-text { color: #6b4f28; }
+    .lighting-night .lighting-item-text { color: #7abfa8; }
+
+    /* ── TRANSFORMATION PANEL ─────────────────────────────── */
+    .transform-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      margin-top: 48px;
+      overflow: hidden;
+      transition: background 0.6s, border 0.6s;
+    }
+    .transform-header {
+      padding: 24px 32px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      transition: border 0.6s;
+    }
+    .transform-header h3 {
+      font-size: 0.78rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      transition: color 0.6s;
+    }
+    .time-chips { display: flex; gap: 8px; }
+    .time-chip {
+      padding: 5px 14px;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+    }
+    .chip-day { background: rgba(196,154,87,0.15); color: #c49a57; }
+    .chip-night { background: rgba(0,229,160,0.12); color: #00c488; }
+
+    .transform-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    @media (max-width: 640px) { .transform-grid { grid-template-columns: 1fr; } }
+
+    .transform-col {
+      padding: 32px;
+    }
+    .transform-col:first-child {
+      border-right: 1px solid var(--border);
+      transition: border 0.6s;
+    }
+    .transform-mode {
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+      transition: color 0.6s;
+    }
+    .transform-item {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+      align-items: flex-start;
+    }
+    .transform-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 1px; }
+    .transform-text {
+      font-size: 0.85rem;
+      line-height: 1.65;
+      color: var(--muted);
+      transition: color 0.6s;
+    }
+    .transform-text strong {
+      display: block;
+      font-size: 0.82rem;
+      color: var(--text);
+      margin-bottom: 2px;
+      font-style: normal;
+      transition: color 0.6s;
+    }
+
+    /* ── OUTDOOR ──────────────────────────────────────────── */
+    .outdoor-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      margin-top: 48px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      transition: background 0.6s, border 0.6s;
+    }
+    @media (max-width: 640px) { .outdoor-card { grid-template-columns: 1fr; } }
+    .outdoor-visual {
+      background: linear-gradient(135deg, #e8f0e0 0%, #d4e4c8 100%);
+      padding: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 280px;
+    }
+    .outdoor-info { padding: 40px; }
+    .outdoor-info h3 {
+      font-size: 1.1rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text);
+      margin-bottom: 16px;
+      font-weight: 300;
+      transition: color 0.6s;
+    }
+    .outdoor-list {
+      list-style: none;
+      font-size: 0.85rem;
+      line-height: 2;
+      color: var(--muted);
+      transition: color 0.6s;
+    }
+    .outdoor-list li::before {
+      content: '—';
+      color: var(--accent);
+      margin-right: 10px;
+      transition: color 0.6s;
+    }
+
+    /* ── BAR SECTION ──────────────────────────────────────── */
+    .bar-card {
+      background: #0d0d12;
+      border-radius: 16px;
+      padding: 48px;
+      margin-top: 48px;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid #1a2a1a;
+    }
+    .bar-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #00e5a0, #ff3366, transparent);
+    }
+    .bar-title {
+      font-size: 1.2rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #00e5a0;
+      margin-bottom: 8px;
+    }
+    .bar-subtitle {
+      font-size: 0.75rem;
+      color: #5a8a6a;
+      letter-spacing: 0.1em;
+      margin-bottom: 32px;
+    }
+    .bar-specs {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 24px;
+    }
+    .bar-spec-item { }
+    .bar-spec-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #3a6a4a;
+      margin-bottom: 6px;
+    }
+    .bar-spec-value {
+      font-size: 0.85rem;
+      color: #a8c8b8;
+      line-height: 1.6;
+    }
+    .neon-strip {
+      margin-top: 32px;
+      padding: 16px 20px;
+      background: rgba(0,229,160,0.06);
+      border: 1px solid rgba(0,229,160,0.15);
+      border-radius: 8px;
+      font-size: 0.8rem;
+      color: #7abfa8;
+      line-height: 1.7;
+    }
+    .neon-strip span { color: #00e5a0; font-weight: bold; }
+
+    /* ── SPEC TABLE ───────────────────────────────────────── */
+    .spec-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 48px;
+      font-size: 0.82rem;
+    }
+    .spec-table th {
+      text-align: left;
+      padding: 12px 20px;
+      font-size: 0.65rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      transition: background 0.6s, color 0.6s, border 0.6s;
+    }
+    .spec-table td {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+      background: var(--surface);
+      transition: background 0.6s, color 0.6s, border 0.6s;
+    }
+    .spec-table tr:hover td { background: rgba(196,154,87,0.03); }
+    .spec-tag {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 10px;
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+    }
+    .tag-structural { background: rgba(139,94,60,0.15); color: #8b5e3c; }
+    .tag-finish { background: rgba(196,154,87,0.15); color: #c49a57; }
+    .tag-furniture { background: rgba(90,110,150,0.15); color: #5a6e96; }
+    .tag-lighting { background: rgba(0,180,120,0.15); color: #00b478; }
+    .tag-feature { background: rgba(200,80,80,0.15); color: #c85050; }
+    body.night .tag-structural { background: rgba(139,94,60,0.2); color: #c8845a; }
+    body.night .tag-finish { background: rgba(196,154,87,0.2); color: #e8b870; }
+    body.night .tag-furniture { background: rgba(90,130,200,0.2); color: #7aa0e0; }
+    body.night .tag-lighting { background: rgba(0,229,160,0.2); color: #00e5a0; }
+    body.night .tag-feature { background: rgba(255,51,102,0.2); color: #ff3366; }
+
+    /* ── FOOTER ───────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 48px 32px;
+      text-align: center;
+      background: var(--surface);
+      transition: background 0.6s, border 0.6s;
+    }
+    footer p {
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      line-height: 2;
+      transition: color 0.6s;
+    }
+    footer strong { color: var(--accent); transition: color 0.6s; }
+
+    /* ── SVG FLOOR PLAN STYLES ────────────────────────────── */
+    .fp-svg text { font-family: 'Georgia', serif; }
+  </style>
+</head>
+<body>
+
+<!-- TOGGLE BAR -->
+<div class="toggle-bar">
+  <span class="toggle-label">☀ Day</span>
+  <label class="toggle-switch">
+    <input type="checkbox" id="modeToggle" onchange="toggleMode(this)" />
+    <div class="toggle-track"></div>
+    <div class="toggle-knob"></div>
+  </label>
+  <span class="toggle-label">Night ☽</span>
+  <span class="mode-text" id="modeText">Coffee Lounge</span>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg-day"></div>
+  <div class="hero-bg-night"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Interior Design Concept — Vinhomes Grand Park</div>
+    <h1 class="hero-title">SOLSTICE</h1>
+    <p class="hero-subtitle">Coffee Lounge &amp; Cocktail Bar</p>
+    <p class="hero-tagline">
+      A space that breathes warmth by day and ignites with energy by night —
+      seamlessly transforming between two distinct worlds.
+    </p>
+    <div class="hero-dims">
+      <span class="dim-pill">Ground Floor · 7 × 13 m</span>
+      <span class="dim-pill">Front Terrace Included</span>
+      <span class="dim-pill">Dual-Mode Design</span>
+    </div>
+  </div>
+</section>
+
+<!-- CONCEPT -->
+<div class="section">
+  <div class="section-label">Design Concept</div>
+  <h2 class="section-title">Warmth That Transforms</h2>
+  <div class="divider"></div>
+  <p class="section-desc">
+    SOLSTICE draws its identity from the arc of the sun. In the morning, the space blooms with
+    warm timber, soft creams, and the smell of fresh coffee — a neighbourhood café where you
+    linger. After sundown, concealed LED systems activate, the bar illuminates, and the same
+    room becomes a candlelit lounge charged with neon edge.
+    <br /><br />
+    The neoclassical facade of the Vinhomes shophouse is respected and framed — dark steel
+    windows, arched detailing, and lush landscaping at the front terrace create a destination
+    address before guests even step inside.
+  </p>
+</div>
+
+<!-- FLOOR PLAN -->
+<div class="section" style="padding-top: 0;">
+  <div class="section-label">Spatial Layout</div>
+  <h2 class="section-title">Floor Plan — Ground Level</h2>
+  <div class="divider"></div>
+  <p class="section-desc">
+    The 7 m × 13 m ground floor is organised into five functional zones, each with a distinct
+    role that evolves across the day. A 3.5 m front terrace adds outdoor seating for 12.
+  </p>
+
+  <div class="floorplan-wrap">
+    <h3>Ground Floor — Schematic Plan · Not to Scale</h3>
+
+    <!-- SVG FLOOR PLAN -->
+    <svg class="fp-svg" viewBox="0 0 760 420" width="100%" style="display:block; max-height:460px;">
+      <defs>
+        <pattern id="hatch" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)">
+          <line x1="0" y1="0" x2="0" y2="6" stroke="#c8baa8" stroke-width="1"/>
+        </pattern>
+        <pattern id="hatch-dark" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)">
+          <line x1="0" y1="0" x2="0" y2="6" stroke="#2a3a2a" stroke-width="1"/>
+        </pattern>
+      </defs>
+
+      <!-- STREET / OUTSIDE -->
+      <rect x="0" y="0" width="760" height="50" fill="#e8e0d4" rx="0"/>
+      <text x="380" y="32" text-anchor="middle" font-size="10" fill="#a08870" letter-spacing="3">STREET FRONTAGE</text>
+
+      <!-- FRONT TERRACE -->
+      <rect x="20" y="50" width="720" height="95" fill="#dff0d8" stroke="#b8d4a8" stroke-width="1.5"/>
+      <text x="380" y="90" text-anchor="middle" font-size="11" fill="#5a7848" font-style="italic">FRONT TERRACE — OUTDOOR SEATING</text>
+      <text x="380" y="108" text-anchor="middle" font-size="9" fill="#7a9860" letter-spacing="1">7000 × 3500 mm · 12 covers · Parasols + Bollard Lights</text>
+
+      <!-- Outdoor chairs (schematic dots) -->
+      <!-- Table 1 -->
+      <rect x="80" y="60" width="28" height="28" rx="2" fill="none" stroke="#7a9860" stroke-width="1.2"/>
+      <circle cx="68" cy="68" r="7" fill="none" stroke="#7a9860" stroke-width="1"/>
+      <circle cx="120" cy="68" r="7" fill="none" stroke="#7a9860" stroke-width="1"/>
+      <circle cx="68" cy="88" r="7" fill="none" stroke="#7a9860" stroke-width="1"/>
+      <circle cx="120" cy="88" r="7" fill="none" stroke="#7a9860" stroke-width="1"/>
+      <!-- Table 2 -->
+      <rect x="190" y="60" width="28" height="28" rx="2" fill="none" stroke="#7a9860" stroke-width="1.2"/>
+      <circle cx="178" cy="68" r="7" fill="none" stroke="#7a9860" stroke-width="1"/>
+      <circle cx="230" cy="68" r="7" fill="none" stroke="#7a9860" stroke-width="1"/>
+      <circle cx="178" cy="88" r="7" fill="none" stroke="#7a9860" stroke-width="1"/>
+      <circle cx="230" cy="88" r="7" fill="none" stroke="#7a9860" stroke-width="1"/>
+      <!-- Table 3 -->
+      <rect x="320" y="60" width="28" height="28" rx="2" fill="none" stroke="#7a9860" stroke-width="1.2"/>
+      <circle cx="308" cy="68" r="7" fill="none" stroke="#7a9860" stroke-width="1"/>
+      <circle cx="360" cy="68" r="7" fill="none" stroke="#7a9860" stroke-width="1"/>
+      <circle cx="308" cy="88" r="7" fill="none" stroke="#7a9860" stroke-width="1"/>
+      <circle cx="360" cy="88" r="7" fill="none" stroke="#7a9860" stroke-width="1"/>
+      <!-- Table 4 -->
+      <rect x="450" y="60" width="28" height="28" rx="2" fill="none" stroke="#7a9860" stroke-width="1.2"/>
+      <circle cx="438" cy="68" r="7" fill="none" stroke="#7a9860" stroke-width="1"/>
+      <circle cx="490" cy="68" r="7" fill="none" stroke="#7a9860" stroke-width="1"/>
+      <circle cx="438" cy="88" r="7" fill="none" stroke="#7a9860" stroke-width="1"/>
+      <circle cx="490" cy="88" r="7" fill="none" stroke="#7a9860" stroke-width="1"/>
+      <!-- Table 5 -->
+      <rect x="580" y="60" width="28" height="28" rx="2" fill="none" stroke="#7a9860" stroke-width="1.2"/>
+      <circle cx="568" cy="68" r="7" fill="none" stroke="#7a9860" stroke-width="1"/>
+      <circle cx="620" cy="68" r="7" fill="none" stroke="#7a9860" stroke-width="1"/>
+      <circle cx="568" cy="88" r="7" fill="none" stroke="#7a9860" stroke-width="1"/>
+      <circle cx="620" cy="88" r="7" fill="none" stroke="#7a9860" stroke-width="1"/>
+      <!-- Parasol circles -->
+      <circle cx="94" cy="74" r="22" fill="none" stroke="#a8c890" stroke-width="1" stroke-dasharray="4,3"/>
+      <circle cx="204" cy="74" r="22" fill="none" stroke="#a8c890" stroke-width="1" stroke-dasharray="4,3"/>
+      <circle cx="334" cy="74" r="22" fill="none" stroke="#a8c890" stroke-width="1" stroke-dasharray="4,3"/>
+      <circle cx="464" cy="74" r="22" fill="none" stroke="#a8c890" stroke-width="1" stroke-dasharray="4,3"/>
+      <circle cx="594" cy="74" r="22" fill="none" stroke="#a8c890" stroke-width="1" stroke-dasharray="4,3"/>
+
+      <!-- BUILDING WALL (front) -->
+      <rect x="20" y="145" width="720" height="8" fill="#8a7a68"/>
+
+      <!-- MAIN FLOOR AREA -->
+      <!-- Zone A: Bar & Counter -->
+      <rect x="20" y="153" width="200" height="230" fill="#fdf4e6" stroke="#d4b888" stroke-width="1.5"/>
+      <text x="120" y="210" text-anchor="middle" font-size="10" fill="#8b6530" letter-spacing="1">A</text>
+      <text x="120" y="226" text-anchor="middle" font-size="9" fill="#8b6530">BAR / SERVICE</text>
+      <!-- Bar counter schematic -->
+      <rect x="36" y="160" width="168" height="32" rx="3" fill="#c49a57" opacity="0.4"/>
+      <text x="120" y="180" text-anchor="middle" font-size="8" fill="#7a5020">COCKTAIL BAR COUNTER</text>
+      <!-- Back bar shelves -->
+      <rect x="36" y="198" width="168" height="18" rx="2" fill="#b5865a" opacity="0.25"/>
+      <text x="120" y="210" text-anchor="middle" font-size="7" fill="#7a5020">BACK BAR SHELVES</text>
+      <!-- Stools -->
+      <circle cx="60" cy="206" r="7" fill="none" stroke="#c49a57" stroke-width="1.2"/>
+      <circle cx="80" cy="206" r="7" fill="none" stroke="#c49a57" stroke-width="1.2"/>
+      <circle cx="100" cy="206" r="7" fill="none" stroke="#c49a57" stroke-width="1.2"/>
+      <circle cx="120" cy="206" r="7" fill="none" stroke="#c49a57" stroke-width="1.2"/>
+      <circle cx="140" cy="206" r="7" fill="none" stroke="#c49a57" stroke-width="1.2"/>
+      <circle cx="160" cy="206" r="7" fill="none" stroke="#c49a57" stroke-width="1.2"/>
+      <circle cx="180" cy="206" r="7" fill="none" stroke="#c49a57" stroke-width="1.2"/>
+
+      <!-- Zone B: Bookshelf Banquette -->
+      <rect x="220" y="153" width="190" height="230" fill="#fef9f0" stroke="#d4b888" stroke-width="1.5"/>
+      <text x="315" y="200" text-anchor="middle" font-size="10" fill="#8b6530" letter-spacing="1">B</text>
+      <text x="315" y="215" text-anchor="middle" font-size="9" fill="#8b6530">BANQUETTE + SHELVES</text>
+      <!-- Wall shelves -->
+      <rect x="226" y="158" width="14" height="220" fill="#b5865a" opacity="0.35"/>
+      <text x="233" y="240" text-anchor="middle" font-size="7" fill="#7a5020" transform="rotate(-90,233,240)">BUILT-IN SHELVES</text>
+      <!-- Banquette -->
+      <rect x="244" y="165" width="160" height="30" rx="3" fill="#c49a57" opacity="0.3"/>
+      <text x="324" y="184" text-anchor="middle" font-size="7.5" fill="#7a5020">LONG BANQUETTE</text>
+      <!-- Tables -->
+      <rect x="250" y="212" width="44" height="36" rx="3" fill="none" stroke="#c49a57" stroke-width="1.2"/>
+      <rect x="310" y="212" width="44" height="36" rx="3" fill="none" stroke="#c49a57" stroke-width="1.2"/>
+      <rect x="370" y="212" width="30" height="36" rx="3" fill="none" stroke="#c49a57" stroke-width="1.2"/>
+      <!-- Chairs opposite -->
+      <rect x="254" y="258" width="36" height="20" rx="2" fill="none" stroke="#a08050" stroke-width="1"/>
+      <rect x="314" y="258" width="36" height="20" rx="2" fill="none" stroke="#a08050" stroke-width="1"/>
+
+      <!-- Zone C: Mixed Seating -->
+      <rect x="410" y="153" width="180" height="230" fill="#fefcf8" stroke="#d4b888" stroke-width="1.5"/>
+      <text x="500" y="200" text-anchor="middle" font-size="10" fill="#8b6530" letter-spacing="1">C</text>
+      <text x="500" y="215" text-anchor="middle" font-size="9" fill="#8b6530">MIXED SEATING</text>
+      <!-- Circular tables -->
+      <circle cx="450" cy="260" r="22" fill="none" stroke="#c49a57" stroke-width="1.2"/>
+      <circle cx="510" cy="260" r="22" fill="none" stroke="#c49a57" stroke-width="1.2"/>
+      <circle cx="570" cy="260" r="22" fill="none" stroke="#c49a57" stroke-width="1.2"/>
+      <!-- Chairs around tables -->
+      <circle cx="435" cy="243" r="8" fill="none" stroke="#a08050" stroke-width="1"/>
+      <circle cx="465" cy="243" r="8" fill="none" stroke="#a08050" stroke-width="1"/>
+      <circle cx="435" cy="277" r="8" fill="none" stroke="#a08050" stroke-width="1"/>
+      <circle cx="465" cy="277" r="8" fill="none" stroke="#a08050" stroke-width="1"/>
+      <circle cx="495" cy="243" r="8" fill="none" stroke="#a08050" stroke-width="1"/>
+      <circle cx="525" cy="243" r="8" fill="none" stroke="#a08050" stroke-width="1"/>
+      <circle cx="495" cy="277" r="8" fill="none" stroke="#a08050" stroke-width="1"/>
+      <circle cx="525" cy="277" r="8" fill="none" stroke="#a08050" stroke-width="1"/>
+      <!-- Sofa area -->
+      <rect x="420" y="165" width="160" height="46" rx="4" fill="#b5865a" opacity="0.2"/>
+      <text x="500" y="192" text-anchor="middle" font-size="8" fill="#7a5020">LOUNGE SOFA CLUSTER</text>
+
+      <!-- Zone D: WC + Utilities -->
+      <rect x="590" y="153" width="80" height="100" fill="url(#hatch)" stroke="#b0a090" stroke-width="1.5"/>
+      <text x="630" y="195" text-anchor="middle" font-size="9" fill="#7a6850">WC</text>
+      <text x="630" y="210" text-anchor="middle" font-size="7.5" fill="#8a7860">UTILITIES</text>
+
+      <!-- Zone E: Kitchen prep / back -->
+      <rect x="590" y="253" width="80" height="130" fill="#f5ede0" stroke="#d4b888" stroke-width="1.5"/>
+      <text x="630" y="305" text-anchor="middle" font-size="9" fill="#8b6530">PREP</text>
+      <text x="630" y="320" text-anchor="middle" font-size="7.5" fill="#8b6530">KITCHEN</text>
+
+      <!-- BACK WALL -->
+      <rect x="20" y="383" width="720" height="8" fill="#8a7a68"/>
+
+      <!-- DIMENSIONS -->
+      <!-- Width arrow -->
+      <line x1="20" y1="400" x2="740" y2="400" stroke="#a08870" stroke-width="1" marker-start="url(#arr)" marker-end="url(#arr)"/>
+      <text x="380" y="414" text-anchor="middle" font-size="9" fill="#a08870">7000 mm</text>
+
+      <!-- Depth arrow -->
+      <line x1="748" y1="50" x2="748" y2="383" stroke="#a08870" stroke-width="1"/>
+      <text x="756" y="220" text-anchor="middle" font-size="9" fill="#a08870" transform="rotate(90,756,220)">12 900 mm</text>
+
+      <!-- Zone labels at bottom -->
+      <text x="120" y="370" text-anchor="middle" font-size="8" fill="#c49a57" letter-spacing="1">A · BAR</text>
+      <text x="315" y="370" text-anchor="middle" font-size="8" fill="#c49a57" letter-spacing="1">B · BANQUETTE</text>
+      <text x="500" y="370" text-anchor="middle" font-size="8" fill="#c49a57" letter-spacing="1">C · SEATING</text>
+      <text x="630" y="370" text-anchor="middle" font-size="8" fill="#a08870" letter-spacing="1">D/E · BACK</text>
+
+      <!-- Compass -->
+      <text x="710" y="408" font-size="14" fill="#a08870">N↑</text>
+    </svg>
+
+    <div class="fp-legend">
+      <div class="fp-legend-item">
+        <div class="fp-legend-swatch" style="background:#dff0d8; border:1px solid #b8d4a8;"></div>
+        <span>Front Terrace (Outdoor)</span>
+      </div>
+      <div class="fp-legend-item">
+        <div class="fp-legend-swatch" style="background:rgba(196,154,87,0.4);"></div>
+        <span>Zone A — Bar &amp; Cocktail Counter</span>
+      </div>
+      <div class="fp-legend-item">
+        <div class="fp-legend-swatch" style="background:#fef9f0; border:1px solid #d4b888;"></div>
+        <span>Zone B — Banquette &amp; Shelving Wall</span>
+      </div>
+      <div class="fp-legend-item">
+        <div class="fp-legend-swatch" style="background:#fefcf8; border:1px solid #d4b888;"></div>
+        <span>Zone C — Mixed Lounge Seating</span>
+      </div>
+      <div class="fp-legend-item">
+        <div class="fp-legend-swatch" style="background:url(#hatch); border:1px solid #b0a090;"></div>
+        <span>Zones D/E — WC &amp; Prep Kitchen</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ZONES -->
+<div class="section" style="padding-top: 0;">
+  <div class="section-label">Zone Breakdown</div>
+  <h2 class="section-title">Five Functional Zones</h2>
+  <div class="divider"></div>
+
+  <div class="zones-grid">
+    <div class="zone-card">
+      <div class="zone-number">A</div>
+      <div class="zone-name">Cocktail Bar &amp; Service</div>
+      <div class="zone-size">≈ 2100 × 2300 mm</div>
+      <div class="zone-desc">
+        A 3.2 m dark marble-top bar counter anchors the left wall. The back bar displays curated
+        spirits on backlit walnut shelving. Seven bar stools in brushed brass and dark leather
+        face the counter. A pendant light cluster hangs over the counter at 1800 mm.
+      </div>
+      <span class="zone-badge badge-night">Bar · Night Focus</span>
+    </div>
+
+    <div class="zone-card">
+      <div class="zone-number">B</div>
+      <div class="zone-name">Banquette + Bookshelf Wall</div>
+      <div class="zone-size">≈ 5000 × 900 mm wall run</div>
+      <div class="zone-desc">
+        A continuous floor-to-ceiling built-in walnut shelf (3 m high, 5 m wide) houses
+        books, ceramics, and warm-lit display objects. A tufted long banquette runs the full
+        length at 550 mm seat height. Two-top and four-top tables in dark wood sit in front.
+      </div>
+      <span class="zone-badge badge-day">Café · Day Focus</span>
+    </div>
+
+    <div class="zone-card">
+      <div class="zone-number">C</div>
+      <div class="zone-name">Mixed Lounge Seating</div>
+      <div class="zone-size">≈ 4000 × 3500 mm</div>
+      <div class="zone-desc">
+        A flexible cluster of two-seater sofas, round marble-top tables, and club chairs.
+        A prominent circular LED feature wall accent (Ø 800 mm glowing ring) becomes a focal
+        centrepiece. Linear ceiling battens with warm/cool switchable LEDs define the zone.
+      </div>
+      <span class="zone-badge badge-day">Café · Day Focus</span>
+    </div>
+
+    <div class="zone-card">
+      <div class="zone-number">D</div>
+      <div class="zone-name">Front Terrace</div>
+      <div class="zone-size">7000 × 3500 mm</div>
+      <div class="zone-desc">
+        The outdoor terrace uses the same language as Pao Phê — sage-green powder-coated
+        steel chairs with white square tables and large cream/sand parasols. Bollard lights
+        at 400 mm height define the paved pathway. Box planters with tropical greenery at
+        the perimeter soften the neoclassical facade.
+      </div>
+      <span class="zone-badge badge-day">Outdoor · All Day</span>
+    </div>
+
+    <div class="zone-card">
+      <div class="zone-number">E</div>
+      <div class="zone-name">Service Core</div>
+      <div class="zone-size">≈ 1500 × 2500 mm</div>
+      <div class="zone-desc">
+        Tucked to the rear: compact prep kitchen, espresso machine station, undercounter
+        refrigeration, and a discreet WC. Black steel door with frosted insert. All
+        pipework and MEP services routed through this zone and concealed behind plasterboard
+        bulkhead with shadow-gap detail.
+      </div>
+      <span class="zone-badge badge-day">Service · Back-of-House</span>
+    </div>
+
+    <div class="zone-card">
+      <div class="zone-number">↑</div>
+      <div class="zone-name">Facade &amp; Entry</div>
+      <div class="zone-size">7000 mm frontage</div>
+      <div class="zone-desc">
+        The neoclassical white facade is preserved. Ground-floor glass panels are framed
+        in anthracite steel. A full-width canopy at 3200 mm with slim black steel profiles
+        shelters the terrace. Brushed brass lettering signage is mounted flush to the facade
+        at eye level. A recessed niche receives the brand logo with a halo light detail.
+      </div>
+      <span class="zone-badge badge-day">Exterior</span>
+    </div>
+  </div>
+</div>
+
+<!-- COLOUR PALETTE -->
+<div class="palette-section">
+  <div class="section">
+    <div class="section-label">Colour Palette</div>
+    <h2 class="section-title">Dual-Mode Colour System</h2>
+    <div class="divider"></div>
+    <p class="section-desc">
+      Daytime uses a warm natural palette grounded in creams, timbers, and aged brass.
+      At night, the concealed LED system shifts the space to its second identity —
+      deep charcoal, emerald neon, and rose-pink accents.
+    </p>
+    <div class="palette-grid">
+      <div class="swatch">
+        <div class="swatch-color" style="background:#f5f0e8;"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Warm Cream</div>
+          <div class="swatch-hex">#F5F0E8</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#b5865a;"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Walnut</div>
+          <div class="swatch-hex">#B5865A</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#c49a57;"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Aged Brass</div>
+          <div class="swatch-hex">#C49A57</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#2a2520;"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Espresso</div>
+          <div class="swatch-hex">#2A2520</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#8a9e84;"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Sage Green</div>
+          <div class="swatch-hex">#8A9E84</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#0d0d12;"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Midnight</div>
+          <div class="swatch-hex">#0D0D12</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#00e5a0;"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Neon Emerald</div>
+          <div class="swatch-hex">#00E5A0</div>
+        </div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-color" style="background:#ff3366;"></div>
+        <div class="swatch-info">
+          <div class="swatch-name">Neon Rose</div>
+          <div class="swatch-hex">#FF3366</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MATERIALS -->
+<div class="section">
+  <div class="section-label">Materials &amp; Finishes</div>
+  <h2 class="section-title">Material Palette</h2>
+  <div class="divider"></div>
+
+  <div class="materials-grid">
+    <div class="material-card">
+      <div class="material-thumb" style="background:linear-gradient(135deg,#c49a57,#8b5e3c);">
+        <span>🪵</span>
+      </div>
+      <div class="material-body">
+        <div class="material-name">American Walnut</div>
+        <div class="material-spec">
+          Built-in shelving, bar counter face, banquette frame.<br/>
+          Matt lacquer finish, clear-coated. Warm LED backlight behind shelves.
+        </div>
+      </div>
+    </div>
+
+    <div class="material-card">
+      <div class="material-thumb" style="background:linear-gradient(135deg,#3a3530,#1a1510);">
+        <span style="filter:invert(1);">🪨</span>
+      </div>
+      <div class="material-body">
+        <div class="material-name">Black Marquina Marble</div>
+        <div class="material-spec">
+          Bar countertop, table tops (Zone A &amp; B).<br/>
+          Polished surface, 20 mm thickness, waterfall edge at bar.
+        </div>
+      </div>
+    </div>
+
+    <div class="material-card">
+      <div class="material-thumb" style="background:linear-gradient(135deg,#d4c4b0,#a89878);">
+        <span>🏗️</span>
+      </div>
+      <div class="material-body">
+        <div class="material-name">Polished Concrete</div>
+        <div class="material-spec">
+          Floor finish throughout interior &amp; terrace.<br/>
+          Micro-topping, 3 mm, sealed. Warm grey tone matching facade.
+        </div>
+      </div>
+    </div>
+
+    <div class="material-card">
+      <div class="material-thumb" style="background:linear-gradient(135deg,#e8d8c0,#c8b090);">
+        <span>🛋️</span>
+      </div>
+      <div class="material-body">
+        <div class="material-name">Taupe Linen Fabric</div>
+        <div class="material-spec">
+          Banquette upholstery, lounge chair cushions.<br/>
+          FR-rated linen blend, Colour: Warm Stone #D4C0A0.
+        </div>
+      </div>
+    </div>
+
+    <div class="material-card">
+      <div class="material-thumb" style="background:linear-gradient(135deg,#c8a060,#a07840);">
+        <span>✨</span>
+      </div>
+      <div class="material-body">
+        <div class="material-name">Brushed Brass</div>
+        <div class="material-spec">
+          Bar stool frames, pendant light fittings, door handles, shelf brackets.<br/>
+          PVD-coated brass, satin finish.
+        </div>
+      </div>
+    </div>
+
+    <div class="material-card">
+      <div class="material-thumb" style="background:linear-gradient(135deg,#2a2a2a,#1a1a1a);">
+        <span style="filter:invert(1);">🔲</span>
+      </div>
+      <div class="material-body">
+        <div class="material-name">Anthracite Steel</div>
+        <div class="material-spec">
+          Window frames, canopy structure, chair frames (outdoor).<br/>
+          Powder-coated RAL 7016, matching building fenestration.
+        </div>
+      </div>
+    </div>
+
+    <div class="material-card">
+      <div class="material-thumb" style="background:linear-gradient(135deg,#f8f4ee,#e8e0d4);">
+        <span>🧱</span>
+      </div>
+      <div class="material-body">
+        <div class="material-name">Venetian Plaster</div>
+        <div class="material-spec">
+          Feature wall behind circular LED fixture (Zone C).<br/>
+          2-coat lime plaster, burnished. Colour: Antique Ivory.
+        </div>
+      </div>
+    </div>
+
+    <div class="material-card">
+      <div class="material-thumb" style="background:linear-gradient(135deg,#a0c890,#68a060);">
+        <span>🌿</span>
+      </div>
+      <div class="material-body">
+        <div class="material-name">Live Greenery</div>
+        <div class="material-spec">
+          Terrace planters (Ficus + Dwarf Bamboo), indoor shelf plants.<br/>
+          Low-maintenance tropical species. Self-watering planters in anthracite.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LIGHTING -->
+<div class="section" style="padding-top: 0;">
+  <div class="section-label">Lighting Design</div>
+  <h2 class="section-title">Dual Lighting Systems</h2>
+  <div class="divider"></div>
+  <p class="section-desc">
+    Two fully independent lighting circuits share the same fixtures. A single scene-control
+    keypad switches between Day Mode (warm 2700 K) and Night Mode (tunable CCT + RGB LED strips).
+  </p>
+
+  <div class="lighting-split">
+    <div class="lighting-card lighting-day">
+      <h3>☀ Day Mode · Coffee Lounge</h3>
+      <div class="lighting-item">
+        <div class="light-dot"></div>
+        <div class="lighting-item-text">
+          <strong>Track lighting</strong> — dimmable warm-white 2700 K spotlights, GU10 6 W,
+          on ceiling track over all zones. CRI 90+.
+        </div>
+      </div>
+      <div class="lighting-item">
+        <div class="light-dot"></div>
+        <div class="lighting-item-text">
+          <strong>Pendant cluster over bar</strong> — 5× brushed-brass bowl pendants, Ø 250 mm,
+          staggered heights 1600–1900 mm AFF. 2700 K globe bulb (visible filament style).
+        </div>
+      </div>
+      <div class="lighting-item">
+        <div class="light-dot"></div>
+        <div class="lighting-item-text">
+          <strong>Shelf backlighting</strong> — warm LED strip 2700 K inside each shelf
+          compartment, diffused through opal diffuser.
+        </div>
+      </div>
+      <div class="lighting-item">
+        <div class="light-dot"></div>
+        <div class="lighting-item-text">
+          <strong>Table lamps</strong> — freestanding mushroom lamps on banquette tables
+          (amber glass shade, 400 mm high). Reference: Flos Gatto style.
+        </div>
+      </div>
+      <div class="lighting-item">
+        <div class="light-dot"></div>
+        <div class="lighting-item-text">
+          <strong>Circular wall fixture</strong> — Ø 800 mm halo ring (LED edge-lit,
+          warm white), surface-mounted on Venetian plaster feature wall.
+        </div>
+      </div>
+      <div class="lighting-item">
+        <div class="light-dot"></div>
+        <div class="lighting-item-text">
+          <strong>Terrace bollards</strong> — 5× low-level bollards at 400 mm,
+          warm white 3000 K, IP65.
+        </div>
+      </div>
+    </div>
+
+    <div class="lighting-card lighting-night">
+      <h3>☽ Night Mode · Cocktail Lounge</h3>
+      <div class="lighting-item">
+        <div class="light-dot"></div>
+        <div class="lighting-item-text">
+          <strong>Perimeter LED strip — Emerald Green</strong> — RGBW strip along full
+          ceiling perimeter (cove detail), programmed to #00E5A0 neon green. Density
+          120 LED/m, diffused through opal channel.
+        </div>
+      </div>
+      <div class="lighting-item">
+        <div class="light-dot"></div>
+        <div class="lighting-item-text">
+          <strong>Cross-beam neon — Red Accent</strong> — two exposed neon-flex tubes
+          (red, #FF3366) running diagonally across ceiling, referencing BÀ BAR aesthetic.
+          6 mm neon-flex on matte black suspension cable.
+        </div>
+      </div>
+      <div class="lighting-item">
+        <div class="light-dot"></div>
+        <div class="lighting-item-text">
+          <strong>Bar pendants dimmed warm</strong> — same pendant cluster dims to 20%,
+          casting intimate gold pools over the bar counter.
+        </div>
+      </div>
+      <div class="lighting-item">
+        <div class="light-dot"></div>
+        <div class="lighting-item-text">
+          <strong>Under-bar LED strip</strong> — green RGBW strip under bar counter
+          overhang, washing the floor with ambient colour.
+        </div>
+      </div>
+      <div class="lighting-item">
+        <div class="light-dot"></div>
+        <div class="lighting-item-text">
+          <strong>Pink wash spotlights</strong> — 4× RGBW recessed downlights in Zone C
+          switched to deep pink/rose (#FF69B4), creating warm ambient pools.
+        </div>
+      </div>
+      <div class="lighting-item">
+        <div class="light-dot"></div>
+        <div class="lighting-item-text">
+          <strong>Linear ceiling battens</strong> — 3× black square-profile battens with
+          halo ring detail. Interior LED ring glows white in day, switches to green at night.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BAR SECTION -->
+<div class="section" style="padding-top: 0;">
+  <div class="section-label">Zone A Detail</div>
+  <h2 class="section-title">The Cocktail Bar</h2>
+  <div class="divider"></div>
+
+  <div class="bar-card">
+    <div class="bar-title">SOLSTICE BAR</div>
+    <div class="bar-subtitle">ZONE A — NIGHT FOCUS · 3200 mm counter run</div>
+    <div class="bar-specs">
+      <div class="bar-spec-item">
+        <div class="bar-spec-label">Counter Top</div>
+        <div class="bar-spec-value">Black Marquina Marble, 20 mm polished, waterfall edge to floor</div>
+      </div>
+      <div class="bar-spec-item">
+        <div class="bar-spec-label">Counter Face</div>
+        <div class="bar-spec-value">Fluted American Walnut panels, vertical 50 mm ribs, matt lacquer</div>
+      </div>
+      <div class="bar-spec-item">
+        <div class="bar-spec-label">Back Bar</div>
+        <div class="bar-spec-value">Open walnut shelving, 4 shelves × 3200 mm wide, back-lit with mirrored panel</div>
+      </div>
+      <div class="bar-spec-item">
+        <div class="bar-spec-label">Pendant Lights</div>
+        <div class="bar-spec-value">5× brushed-brass pendant, Ø 250 mm, heights 1600–1900 mm AFF staggered</div>
+      </div>
+      <div class="bar-spec-item">
+        <div class="bar-spec-label">Bar Stools</div>
+        <div class="bar-spec-value">7× Ø 420 mm seat, brushed brass frame, black aniline leather, 760 mm seat height</div>
+      </div>
+      <div class="bar-spec-item">
+        <div class="bar-spec-label">Floor Behind Bar</div>
+        <div class="bar-spec-value">Anti-slip black rubber mat, 900 mm wide run, full bar length</div>
+      </div>
+    </div>
+    <div class="neon-strip">
+      <span>Night activation sequence:</span> At 6 PM, the scene controller fades track spots to 15%,
+      activates the <span>green LED perimeter cove</span>, illuminates the
+      <span>red diagonal neon flex</span>, brings up the under-bar LED wash in emerald,
+      and dims the pendant cluster to 25%. The transition takes 90 seconds — the room transforms
+      without guests needing to move.
+    </div>
+  </div>
+</div>
+
+<!-- DAY/NIGHT TRANSFORMATION -->
+<div class="section" style="padding-top: 0;">
+  <div class="section-label">Day → Night</div>
+  <h2 class="section-title">The Transformation</h2>
+  <div class="divider"></div>
+
+  <div class="transform-panel">
+    <div class="transform-header">
+      <h3>Same Space · Two Identities</h3>
+      <div class="time-chips">
+        <span class="time-chip chip-day">07:00 – 18:00</span>
+        <span class="time-chip chip-night">18:00 – 00:00</span>
+      </div>
+    </div>
+    <div class="transform-grid">
+      <div class="transform-col">
+        <div class="transform-mode">☀ Coffee Lounge — Day Mode</div>
+
+        <div class="transform-item">
+          <div class="transform-icon">☕</div>
+          <div class="transform-text">
+            <strong>Warm &amp; Welcoming</strong>
+            Track lights at full 100% warm-white. Natural light floods through floor-to-ceiling
+            front glazing. Timber and cream tones dominate.
+          </div>
+        </div>
+        <div class="transform-item">
+          <div class="transform-icon">📚</div>
+          <div class="transform-text">
+            <strong>Bookshelf Wall Active</strong>
+            Built-in shelf lit with warm 2700 K strip. Books, ceramics, and branded merchandise
+            on display. Table lamps on during overcast mornings.
+          </div>
+        </div>
+        <div class="transform-item">
+          <div class="transform-icon">🎵</div>
+          <div class="transform-text">
+            <strong>Acoustic playlist</strong>
+            Low-volume instrumental jazz/lo-fi via 4× in-ceiling speaker system.
+            Background only — conversation-friendly level.
+          </div>
+        </div>
+        <div class="transform-item">
+          <div class="transform-icon">🌿</div>
+          <div class="transform-text">
+            <strong>Outdoor terrace open</strong>
+            Front terrace with parasols deployed, olive green chairs, white tables.
+            Morning sun filtered by existing street trees.
+          </div>
+        </div>
+        <div class="transform-item">
+          <div class="transform-icon">🧋</div>
+          <div class="transform-text">
+            <strong>Bar as service counter</strong>
+            The cocktail bar functions as the coffee order counter.
+            Espresso machine and cold brew on the back shelf.
+          </div>
+        </div>
+      </div>
+
+      <div class="transform-col">
+        <div class="transform-mode">☽ Cocktail Lounge — Night Mode</div>
+
+        <div class="transform-item">
+          <div class="transform-icon">🟢</div>
+          <div class="transform-text">
+            <strong>Green Neon Perimeter Activated</strong>
+            RGBW LED strip in ceiling cove glows #00E5A0 emerald. Red neon-flex diagonal
+            lines animate overhead. The room pulses green at low intensity.
+          </div>
+        </div>
+        <div class="transform-item">
+          <div class="transform-icon">🍸</div>
+          <div class="transform-text">
+            <strong>Bar illuminated with pendants</strong>
+            5 pendant cluster glows at 25%. Black marble bar top reflects warm gold pools.
+            Spirits display backlit with warm amber LEDs.
+          </div>
+        </div>
+        <div class="transform-item">
+          <div class="transform-icon">🎶</div>
+          <div class="transform-text">
+            <strong>Music level elevated</strong>
+            Electronic/chill-house playlist. Volume to social level.
+            Possible live DJ set Fri–Sat from corner setup near bar.
+          </div>
+        </div>
+        <div class="transform-item">
+          <div class="transform-icon">💡</div>
+          <div class="transform-text">
+            <strong>Pink wash on lounge zone</strong>
+            RGBW downlights in Zone C shift to deep rose. Circular wall ring dims to 20%,
+            creating intimate glow. Table candles or LED candle vessels placed on tables.
+          </div>
+        </div>
+        <div class="transform-item">
+          <div class="transform-icon">🚪</div>
+          <div class="transform-text">
+            <strong>Terrace softly lit</strong>
+            Bollards dim to 30%. Under-canopy LED strip (warm white) maintains entry visibility.
+            Parasols retracted, replaced by festoon string lights above terrace.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- OUTDOOR TERRACE -->
+<div class="section" style="padding-top: 0;">
+  <div class="section-label">Outdoor Zone</div>
+  <h2 class="section-title">Front Terrace</h2>
+  <div class="divider"></div>
+  <p class="section-desc">
+    The terrace occupies the full 7 m frontage, extending 3.5 m to the street edge.
+    A slim anthracite steel canopy at 3200 mm provides weather protection over the inner
+    terrace row. The outer row is parasol-shaded.
+  </p>
+
+  <div class="outdoor-card">
+    <div class="outdoor-visual">
+      <!-- Minimal terrace SVG illustration -->
+      <svg viewBox="0 0 280 200" width="100%">
+        <!-- Ground -->
+        <rect x="0" y="150" width="280" height="50" fill="#d4c8b4"/>
+        <!-- Pavement texture lines -->
+        <line x1="0" y1="162" x2="280" y2="162" stroke="#c0b4a0" stroke-width="0.5"/>
+        <line x1="0" y1="174" x2="280" y2="174" stroke="#c0b4a0" stroke-width="0.5"/>
+        <line x1="70" y1="150" x2="70" y2="200" stroke="#c0b4a0" stroke-width="0.5"/>
+        <line x1="140" y1="150" x2="140" y2="200" stroke="#c0b4a0" stroke-width="0.5"/>
+        <line x1="210" y1="150" x2="210" y2="200" stroke="#c0b4a0" stroke-width="0.5"/>
+        <!-- Lawn -->
+        <rect x="0" y="0" width="280" height="150" fill="#c8e0b8"/>
+        <rect x="0" y="140" width="280" height="10" fill="#b8d0a8"/>
+        <!-- Tables & chairs group 1 -->
+        <rect x="50" y="60" width="30" height="30" rx="2" fill="#f5f5f0" stroke="#8a9e84" stroke-width="1.5"/>
+        <rect x="38" y="65" width="14" height="20" rx="2" fill="#8a9e84"/>
+        <rect x="78" y="65" width="14" height="20" rx="2" fill="#8a9e84"/>
+        <rect x="55" y="48" width="20" height="14" rx="2" fill="#8a9e84"/>
+        <rect x="55" y="88" width="20" height="14" rx="2" fill="#8a9e84"/>
+        <!-- Parasol group 1 -->
+        <line x1="65" y1="20" x2="65" y2="75" stroke="#d4b888" stroke-width="2"/>
+        <ellipse cx="65" cy="28" rx="38" ry="12" fill="#f0e8d4" stroke="#d4c8a4" stroke-width="1"/>
+        <!-- Tables & chairs group 2 -->
+        <rect x="170" y="60" width="30" height="30" rx="2" fill="#f5f5f0" stroke="#8a9e84" stroke-width="1.5"/>
+        <rect x="158" y="65" width="14" height="20" rx="2" fill="#8a9e84"/>
+        <rect x="198" y="65" width="14" height="20" rx="2" fill="#8a9e84"/>
+        <rect x="175" y="48" width="20" height="14" rx="2" fill="#8a9e84"/>
+        <rect x="175" y="88" width="20" height="14" rx="2" fill="#8a9e84"/>
+        <!-- Parasol group 2 -->
+        <line x1="185" y1="20" x2="185" y2="75" stroke="#d4b888" stroke-width="2"/>
+        <ellipse cx="185" cy="28" rx="38" ry="12" fill="#f0e8d4" stroke="#d4c8a4" stroke-width="1"/>
+        <!-- Bollard lights -->
+        <rect x="28" y="142" width="6" height="14" rx="2" fill="#2a2520"/>
+        <circle cx="31" cy="140" r="5" fill="#f0d890" opacity="0.8"/>
+        <rect x="138" y="142" width="6" height="14" rx="2" fill="#2a2520"/>
+        <circle cx="141" cy="140" r="5" fill="#f0d890" opacity="0.8"/>
+        <rect x="248" y="142" width="6" height="14" rx="2" fill="#2a2520"/>
+        <circle cx="251" cy="140" r="5" fill="#f0d890" opacity="0.8"/>
+        <!-- Planters -->
+        <rect x="0" y="80" width="20" height="40" rx="3" fill="#4a4a3a"/>
+        <ellipse cx="10" cy="80" rx="10" ry="4" fill="#5a5a4a"/>
+        <line x1="10" y1="60" x2="2" y2="45" stroke="#5a7848" stroke-width="2"/>
+        <line x1="10" y1="58" x2="18" y2="44" stroke="#5a7848" stroke-width="2"/>
+        <line x1="10" y1="62" x2="10" y2="48" stroke="#5a7848" stroke-width="2"/>
+        <rect x="260" y="80" width="20" height="40" rx="3" fill="#4a4a3a"/>
+        <ellipse cx="270" cy="80" rx="10" ry="4" fill="#5a5a4a"/>
+        <line x1="270" y1="60" x2="262" y2="45" stroke="#5a7848" stroke-width="2"/>
+        <line x1="270" y1="58" x2="278" y2="44" stroke="#5a7848" stroke-width="2"/>
+        <line x1="270" y1="62" x2="270" y2="48" stroke="#5a7848" stroke-width="2"/>
+        <!-- Label -->
+        <text x="140" y="130" text-anchor="middle" font-size="9" fill="#5a7848" font-style="italic">Outdoor Terrace · 7 × 3.5 m</text>
+      </svg>
+    </div>
+    <div class="outdoor-info">
+      <h3>Terrace Specification</h3>
+      <ul class="outdoor-list">
+        <li>12 covers across 5 two-top tables</li>
+        <li>Sage-green powder-coated steel chairs (stackable)</li>
+        <li>White square tables 700 × 700 mm, aluminium frame</li>
+        <li>3× large cream-canvas parasols Ø 3000 mm with weighted base</li>
+        <li>5× anthracite bollard lights, IP65, 3000 K, 400 mm height</li>
+        <li>Festoon string lights overhead at night (switchable)</li>
+        <li>Box planters in anthracite steel, Ficus lyrata + dwarf bamboo</li>
+        <li>Slim anthracite canopy over inner row (3.2 m AFF)</li>
+        <li>Polished concrete paving to match interior floor</li>
+        <li>Brushed brass brand signage at entry pillar, halo-lit</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- FURNITURE SCHEDULE -->
+<div class="section" style="padding-top: 0;">
+  <div class="section-label">Furniture Schedule</div>
+  <h2 class="section-title">Full Furniture List</h2>
+  <div class="divider"></div>
+
+  <div class="furniture-list">
+    <div class="furniture-row header">
+      <span>ID</span>
+      <span>Item</span>
+      <span>Zone</span>
+      <span>Material</span>
+      <span>Qty</span>
+    </div>
+
+    <div class="furniture-row">
+      <span class="furn-id">F-01</span>
+      <span class="furn-name">Long Banquette Bench (5000 mm)</span>
+      <span class="furn-zone">Zone B</span>
+      <span class="furn-mat">Walnut + Taupe Linen</span>
+      <span class="furn-qty">1</span>
+    </div>
+    <div class="furniture-row">
+      <span class="furn-id">F-02</span>
+      <span class="furn-name">Bar Counter (3200 × 900 mm)</span>
+      <span class="furn-zone">Zone A</span>
+      <span class="furn-mat">Black Marble + Walnut</span>
+      <span class="furn-qty">1</span>
+    </div>
+    <div class="furniture-row">
+      <span class="furn-id">F-03</span>
+      <span class="furn-name">Bar Stool, 760 mm seat ht</span>
+      <span class="furn-zone">Zone A</span>
+      <span class="furn-mat">Brass Frame, Black Leather</span>
+      <span class="furn-qty">7</span>
+    </div>
+    <div class="furniture-row">
+      <span class="furn-id">F-04</span>
+      <span class="furn-name">Two-top Dining Table 700 × 700 mm</span>
+      <span class="furn-zone">Zone B</span>
+      <span class="furn-mat">Black Marble, Black Steel Leg</span>
+      <span class="furn-qty">4</span>
+    </div>
+    <div class="furniture-row">
+      <span class="furn-id">F-05</span>
+      <span class="furn-name">Round Café Table Ø 700 mm</span>
+      <span class="furn-zone">Zone C</span>
+      <span class="furn-mat">Terrazzo Top, Black Steel Leg</span>
+      <span class="furn-qty">4</span>
+    </div>
+    <div class="furniture-row">
+      <span class="furn-id">F-06</span>
+      <span class="furn-name">Dining Chair — Metal Frame</span>
+      <span class="furn-zone">Zone B &amp; C</span>
+      <span class="furn-mat">Black Powder-coat, Upholstered Seat</span>
+      <span class="furn-qty">16</span>
+    </div>
+    <div class="furniture-row">
+      <span class="furn-id">F-07</span>
+      <span class="furn-name">Lounge Sofa — 2-Seater</span>
+      <span class="furn-zone">Zone C</span>
+      <span class="furn-mat">Walnut Leg, Warm Stone Linen</span>
+      <span class="furn-qty">3</span>
+    </div>
+    <div class="furniture-row">
+      <span class="furn-id">F-08</span>
+      <span class="furn-name">Club Armchair</span>
+      <span class="furn-zone">Zone C</span>
+      <span class="furn-mat">Taupe Boucle, Walnut Leg</span>
+      <span class="furn-qty">4</span>
+    </div>
+    <div class="furniture-row">
+      <span class="furn-id">F-09</span>
+      <span class="furn-name">Built-in Bookshelf Wall (5000 × 3000 mm)</span>
+      <span class="furn-zone">Zone B</span>
+      <span class="furn-mat">American Walnut, Matt Lacquer</span>
+      <span class="furn-qty">1</span>
+    </div>
+    <div class="furniture-row">
+      <span class="furn-id">F-10</span>
+      <span class="furn-name">Back Bar Display Shelving</span>
+      <span class="furn-zone">Zone A</span>
+      <span class="furn-mat">Walnut + Mirror Back Panel</span>
+      <span class="furn-qty">1</span>
+    </div>
+    <div class="furniture-row">
+      <span class="furn-id">F-11</span>
+      <span class="furn-name">Table Lamp — Mushroom Style</span>
+      <span class="furn-zone">Zone B</span>
+      <span class="furn-mat">Amber Glass, Brass Base</span>
+      <span class="furn-qty">4</span>
+    </div>
+    <div class="furniture-row">
+      <span class="furn-id">F-12</span>
+      <span class="furn-name">Outdoor Chair — Stackable</span>
+      <span class="furn-zone">Terrace</span>
+      <span class="furn-mat">Sage-Green Steel, Polypropylene</span>
+      <span class="furn-qty">12</span>
+    </div>
+    <div class="furniture-row">
+      <span class="furn-id">F-13</span>
+      <span class="furn-name">Outdoor Table 700 × 700 mm</span>
+      <span class="furn-zone">Terrace</span>
+      <span class="furn-mat">White Aluminium, Compact Laminate Top</span>
+      <span class="furn-qty">5</span>
+    </div>
+    <div class="furniture-row">
+      <span class="furn-id">F-14</span>
+      <span class="furn-name">Parasol Ø 3000 mm with Base</span>
+      <span class="furn-zone">Terrace</span>
+      <span class="furn-mat">Cream Canvas, Anthracite Pole + Weighted Base</span>
+      <span class="furn-qty">3</span>
+    </div>
+    <div class="furniture-row">
+      <span class="furn-id">F-15</span>
+      <span class="furn-name">Planter Box 600 × 600 × 800 mm</span>
+      <span class="furn-zone">Terrace + Interior</span>
+      <span class="furn-mat">Anthracite Corten Steel</span>
+      <span class="furn-qty">6</span>
+    </div>
+  </div>
+</div>
+
+<!-- TECHNICAL SPECIFICATIONS -->
+<div class="section" style="padding-top: 0;">
+  <div class="section-label">Technical Specifications</div>
+  <h2 class="section-title">Construction &amp; Fitout Notes</h2>
+  <div class="divider"></div>
+
+  <table class="spec-table">
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>Specification</th>
+        <th>Notes</th>
+        <th>Type</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Ceiling Height</td>
+        <td>3200 mm finished ceiling (slabs at ~3800 mm)</td>
+        <td>Exposed services above cove zone for industrial touch</td>
+        <td><span class="spec-tag tag-structural">Structural</span></td>
+      </tr>
+      <tr>
+        <td>Ceiling Cove (LED)</td>
+        <td>150 × 80 mm plasterboard cove, full perimeter</td>
+        <td>Houses RGBW LED strip, 120 LED/m, 24 V DC, DMX control</td>
+        <td><span class="spec-tag tag-lighting">Lighting</span></td>
+      </tr>
+      <tr>
+        <td>Front Glazing</td>
+        <td>Triple-panel full-height swing doors, anthracite steel, 2800 × 2700 mm each</td>
+        <td>All three panels open fully for terrace integration on dry days</td>
+        <td><span class="spec-tag tag-structural">Structural</span></td>
+      </tr>
+      <tr>
+        <td>Floor — Interior</td>
+        <td>Polished micro-cement topping, 3 mm, on existing concrete slab</td>
+        <td>Warm grey colour, sealed with 2-part polyurethane, anti-slip class R10</td>
+        <td><span class="spec-tag tag-finish">Finish</span></td>
+      </tr>
+      <tr>
+        <td>Floor — Terrace</td>
+        <td>600 × 600 mm porcelain tile, concrete-effect, outdoor slip-rating R11</td>
+        <td>Matching grey tone as interior for visual continuity</td>
+        <td><span class="spec-tag tag-finish">Finish</span></td>
+      </tr>
+      <tr>
+        <td>Bookshelf Wall</td>
+        <td>Floor-to-ceiling 5000 × 3000 mm, walnut veneer on MDF carcass, site-built</td>
+        <td>LED strip in every 3rd shelf bay; structural fixings to RC wall behind</td>
+        <td><span class="spec-tag tag-feature">Feature</span></td>
+      </tr>
+      <tr>
+        <td>Circular Wall Ring</td>
+        <td>Ø 800 mm steel ring, edge-lit LED, wall-mounted on Venetian plaster feature</td>
+        <td>2700 K day / RGBW night; transformer concealed in plaster cavity</td>
+        <td><span class="spec-tag tag-lighting">Lighting</span></td>
+      </tr>
+      <tr>
+        <td>Bar Counter</td>
+        <td>3200 × 900 mm × 1100 mm high; slab waterfall edge to floor</td>
+        <td>Undercounter fridge × 2, glass washer × 1, bottle fridge × 1 concealed</td>
+        <td><span class="spec-tag tag-furniture">Furniture</span></td>
+      </tr>
+      <tr>
+        <td>Canopy — Exterior</td>
+        <td>Full 7000 mm wide × 2000 mm projection; slim 80 × 40 mm steel box-section</td>
+        <td>Integrated LED strip underside (warm white 3000 K, dimmable)</td>
+        <td><span class="spec-tag tag-structural">Structural</span></td>
+      </tr>
+      <tr>
+        <td>Neon-Flex Ceiling</td>
+        <td>2× diagonal runs, red #FF3366, 6 mm neon-flex on 4 mm cable suspension</td>
+        <td>Activated only in Night Mode via smart dimmer; crossed at approx. 60° angle</td>
+        <td><span class="spec-tag tag-lighting">Lighting</span></td>
+      </tr>
+      <tr>
+        <td>Sound System</td>
+        <td>4× 200 mm in-ceiling speakers + 1× subwoofer concealed behind bar</td>
+        <td>Zone-controlled, Bluetooth + line-in input; max SPL 85 dB interior</td>
+        <td><span class="spec-tag tag-feature">Feature</span></td>
+      </tr>
+      <tr>
+        <td>Scene Controller</td>
+        <td>Single touch-panel keypad near entry, 4 presets: Morning / Afternoon / Evening / Night</td>
+        <td>Automates all LED circuits, dimmer levels, and accent neon switching</td>
+        <td><span class="spec-tag tag-lighting">Lighting</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p>
+    <strong>SOLSTICE</strong> — Interior Design Concept<br/>
+    Coffee Lounge &amp; Cocktail Bar · Vinhomes Grand Park, Ground Floor<br/>
+    7000 mm frontage · Ground Level · Dual-Mode Day/Night<br/>
+    Design Reference Document · May 2026
+  </p>
+</footer>
+
+<script>
+  function toggleMode(checkbox) {
+    document.body.classList.toggle('night', checkbox.checked);
+    document.getElementById('modeText').textContent =
+      checkbox.checked ? 'Cocktail Lounge' : 'Coffee Lounge';
+  }
+</script>
+
+</body>
+</html>
